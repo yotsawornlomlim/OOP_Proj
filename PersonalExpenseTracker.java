@@ -1,6 +1,8 @@
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Scanner;
 
+// Abstract base class
 abstract class Transaction {
     protected String description;
     protected double amount;
@@ -27,6 +29,7 @@ abstract class Transaction {
     }
 }
 
+// Expense class
 class Expense extends Transaction {
     public Expense(String description, double amount, Date date) {
         super(description, amount, date);
@@ -38,6 +41,7 @@ class Expense extends Transaction {
     }
 }
 
+// Income class
 class Income extends Transaction {
     public Income(String description, double amount, Date date) {
         super(description, amount, date);
@@ -49,6 +53,7 @@ class Income extends Transaction {
     }
 }
 
+// Manager class to hold and process transactions
 class TransactionManager {
     private ArrayList<Transaction> transactions;
 
@@ -61,10 +66,15 @@ class TransactionManager {
     }
 
     public void showAllTransactions() {
-        for (Transaction t : transactions) {
-            t.showInfo();
+        if (transactions.isEmpty()) {
+            System.out.println("No transactions yet.");
+        } else {
+            for (Transaction t : transactions) {
+                t.showInfo();
+            }
         }
     }
+
     public double getTotalIncome() {
         double total = 0;
         for (Transaction t : transactions) {
@@ -90,20 +100,72 @@ class TransactionManager {
     }
 }
 
+// Main class with interactive menu
 public class PersonalExpenseTracker {
     public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
         TransactionManager manager = new TransactionManager();
+        boolean running = true;
 
-        manager.addTransaction(new Income("Salary", 25000, new Date()));
-        manager.addTransaction(new Expense("Lunch", 50, new Date()));
-        manager.addTransaction(new Expense("Bus ticket", 20, new Date()));
-        manager.addTransaction(new Income("Freelance", 5000, new Date()));
-        manager.addTransaction(new Expense("Groceries", 1500, new Date()));
-        System.out.println("All transactions:");
-        manager.showAllTransactions();
+        System.out.println("Welcome to Personal Expense Tracker!");
 
-        System.out.println("\nTotal Income: " + manager.getTotalIncome());
-        System.out.println("Total Expense: " + manager.getTotalExpense());
-        System.out.println("Balance: " + manager.getBalance());
+        while (running) {
+            System.out.println("\nPlease choose an option:");
+            System.out.println("1. Add Income");
+            System.out.println("2. Add Expense");
+            System.out.println("3. Show All Transactions");
+            System.out.println("4. Show Totals and Balance");
+            System.out.println("5. Exit");
+            System.out.print("Enter choice: ");
+
+            int choice;
+            try {
+                choice = Integer.parseInt(scanner.nextLine());
+            } catch (Exception e) {
+                System.out.println("Invalid input. Please enter a number.");
+                continue;
+            }
+
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter income description: ");
+                    String incomeDesc = scanner.nextLine();
+                    System.out.print("Enter income amount: ");
+                    double incomeAmt = Double.parseDouble(scanner.nextLine());
+                    manager.addTransaction(new Income(incomeDesc, incomeAmt, new Date()));
+                    System.out.println("Income added successfully.");
+                    break;
+
+                case 2:
+                    System.out.print("Enter expense description: ");
+                    String expenseDesc = scanner.nextLine();
+                    System.out.print("Enter expense amount: ");
+                    double expenseAmt = Double.parseDouble(scanner.nextLine());
+                    manager.addTransaction(new Expense(expenseDesc, expenseAmt, new Date()));
+                    System.out.println("Expense added successfully.");
+                    break;
+
+                case 3:
+                    System.out.println("\nAll transactions:");
+                    manager.showAllTransactions();
+                    break;
+
+                case 4:
+                    System.out.println("\nTotal Income: " + manager.getTotalIncome());
+                    System.out.println("Total Expense: " + manager.getTotalExpense());
+                    System.out.println("Balance: " + manager.getBalance());
+                    break;
+
+                case 5:
+                    running = false;
+                    System.out.println("Thank you for using Personal Expense Tracker!");
+                    break;
+
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        }
+
+        scanner.close();
     }
 }
